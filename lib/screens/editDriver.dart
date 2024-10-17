@@ -1,24 +1,28 @@
+import 'package:e_tourism/httpHelper/adminData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'guidesListScreen.dart';
 
 class Editdriver extends StatefulWidget {
-  const Editdriver({super.key});
+  const Editdriver({super.key, required this.fullName});
+  final String fullName;
 
   @override
   State<Editdriver> createState() => _EditdriverState();
 }
 
 class _EditdriverState extends State<Editdriver> {
-  final Map<String, String> data = {
-    'firstName': "mhd",
-    'lastName': "sul",
-    'mobile': "0973377296",
-    'address': "damascus",
-    'description': "some description",
-  };
-
+  Map<String, String> data = {};
+  bool dataIsset=false;
+  Future<void> setData() async {
+    data =await AdminData().getOneDriver(fullname: widget.fullName);
+    formControllers["firstName"]!.text=data["firstName"]!;
+    formControllers["lastName"]!.text=data["lastName"]!;
+    formControllers["mobile"]!.text=data["mobile"]!;
+    formControllers["address"]!.text=data["address"]!;
+    formControllers["description"]!.text=data["description"]!;
+  }
   final Map<String, TextEditingController> formControllers = {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
@@ -27,14 +31,14 @@ class _EditdriverState extends State<Editdriver> {
     'description': TextEditingController(),
   };
 
+
   @override
   void initState() {
     super.initState();
-    formControllers["firstName"]!.text=data["firstName"]!;
-    formControllers["lastName"]!.text=data["lastName"]!;
-    formControllers["mobile"]!.text=data["mobile"]!;
-    formControllers["address"]!.text=data["address"]!;
-    formControllers["description"]!.text=data["description"]!;
+    setData();
+    setState(() {
+      dataIsset=true;
+    });
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -106,7 +110,14 @@ class _EditdriverState extends State<Editdriver> {
           ),
         ),
       ),
-      body: ListView(
+      body: !dataIsset
+          ? Center(
+          child: Container(
+            width: 100,
+            height: 100,
+            child: CircularProgressIndicator(),
+          ))
+          : ListView(
         children: [
           Center(
             child: Column(

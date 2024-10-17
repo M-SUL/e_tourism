@@ -4,6 +4,8 @@ import 'package:e_tourism/screens/editGuide.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../httpHelper/adminData.dart';
+
 class Guideslistscreen extends StatefulWidget {
   const Guideslistscreen({super.key});
 
@@ -12,17 +14,20 @@ class Guideslistscreen extends StatefulWidget {
 }
 
 class _GuideslistscreenState extends State<Guideslistscreen> {
-  List<List<String>> data = [
-    ["majd kamar", "some descriptions and some phone numbers "],
-    ["majd kamar", "some descriptions and some phone numbers "],
-    ["mohamad suleyman", "some descriptions and some phone numbers "],
-    ["ali harmalani", "some descriptions and some phone numbers "],
-    ["saeed saad", "some descriptions and some phone numbers "],
-    ["hamid hamd", "some descriptions and some phone numbers "],
-    ["tarek tark", "some descriptions and some phone numbers "],
-    ["sami smsm", "some descriptions and some phone numbers "],
-  ];
-
+  List<List<String>> data = [];
+  bool dataISset = false;
+  Future<void> setData() async {
+    data = await AdminData().getDrivers();
+    setState(() {
+      dataISset = true;
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setData();
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -85,7 +90,14 @@ class _GuideslistscreenState extends State<Guideslistscreen> {
           ),
         ),
       ),
-      body: SizedBox(
+      body: !dataISset
+          ? Center(
+          child: Container(
+            width: 100,
+            height: 100,
+            child: CircularProgressIndicator(),
+          ))
+          : SizedBox(
         child: Center(
           child: Padding(
             padding: EdgeInsets.only(top: size.height / 10),
@@ -132,7 +144,7 @@ class _GuideslistscreenState extends State<Guideslistscreen> {
                               child: GestureDetector(
                                 onTap: (){
                                   Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                                    return  Editguide();
+                                    return  Editguide(fullName: "${item[0]} ${item[1]}");
                                   }));
                                 },
                                 child: Card(
