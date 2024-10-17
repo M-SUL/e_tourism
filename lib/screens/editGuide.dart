@@ -22,6 +22,9 @@ class _EditguideState extends State<Editguide> {
     formControllers["mobile"]!.text=data["mobile"]!;
     formControllers["address"]!.text=data["address"]!;
     formControllers["description"]!.text=data["description"]!;
+    setState(() {
+      dataIsset=true;
+    });
   }
   final Map<String, TextEditingController> formControllers = {
     'firstName': TextEditingController(),
@@ -36,9 +39,7 @@ class _EditguideState extends State<Editguide> {
   void initState() {
     super.initState();
     setData();
-    setState(() {
-      dataIsset=true;
-    });
+
   }
 
   final _formKey = GlobalKey<FormState>();
