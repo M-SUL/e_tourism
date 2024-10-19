@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'guidesListScreen.dart';
 
 class Driverslistscreen extends StatefulWidget {
-  Driverslistscreen({super.key});
+  const Driverslistscreen({super.key});
 
   @override
   State<Driverslistscreen> createState() => _DriverslistscreenState();
 }
 
 class _DriverslistscreenState extends State<Driverslistscreen> {
-  List<List<String>> data = [];
+  List<List> data = [];
   bool dataISset = false;
   Future<void> setData() async {
     data = await AdminData().getDrivers();
@@ -148,7 +148,7 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) {
-                                          return  Editdriver(fullName: "${item[0]} ${item[1]}");
+                                          return  Editdriver(id: int.parse("${item[2]}"));
                                         }));
                                       },
                                       child: Card(

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'guidesListScreen.dart';
 
 class Editdriver extends StatefulWidget {
-  const Editdriver({super.key, required this.fullName});
-  final String fullName;
+  const Editdriver({super.key, required this.id});
+  final int id;
 
   @override
   State<Editdriver> createState() => _EditdriverState();
@@ -16,11 +16,10 @@ class _EditdriverState extends State<Editdriver> {
   Map<String, String> data = {};
   bool dataIsset=false;
   Future<void> setData() async {
-    data =await AdminData().getOneDriver(fullname: widget.fullName);
+    data =await AdminData().getOneDriver(id: widget.id);
     formControllers["firstName"]!.text=data["firstName"]!;
     formControllers["lastName"]!.text=data["lastName"]!;
-    formControllers["mobile"]!.text=data["mobile"]!;
-    formControllers["address"]!.text=data["address"]!;
+    formControllers["plate_number"]!.text=data["plate_number"]!;
     formControllers["description"]!.text=data["description"]!;
     setState(() {
       dataIsset=true;
@@ -29,8 +28,7 @@ class _EditdriverState extends State<Editdriver> {
   final Map<String, TextEditingController> formControllers = {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
-    'mobile': TextEditingController(),
-    'address': TextEditingController(),
+    'plate_number': TextEditingController(),
     'description': TextEditingController(),
   };
 
@@ -169,36 +167,16 @@ class _EditdriverState extends State<Editdriver> {
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
-                          controller: formControllers["mobile"],
+                          controller: formControllers["plate_number"],
                           decoration: InputDecoration(
-                            labelText: 'Mobile',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                          ),
-                          keyboardType: TextInputType.phone,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your mobile number';
-                            }
-                            if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                              return 'Please enter a valid 10-digit mobile number';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: formControllers["address"],
-                          decoration: InputDecoration(
-                            labelText: 'Address',
+                            labelText: 'plate number',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your address';
+                              return 'Please enter your plate number';
                             }
                             return null;
                           },
@@ -227,11 +205,26 @@ class _EditdriverState extends State<Editdriver> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton.icon(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Processing Data')),
-                                      );
+                                      final updateData = {
+                                        'first_name': formControllers['firstName']!.text,
+                                        'last_name': formControllers['lastName']!.text,
+                                        'plate_number': formControllers['plate_number']!.text,
+                                        'description': formControllers['description']!.text,
+                                      };
+                                      // Call updateGuide method from AdminData
+                                      bool success = await AdminData().updateDriver(id: widget.id, updateData: updateData);
+                                      // Send PUT request to update guide
+                                      if (success) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Driver updated successfully')),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Failed to update Driver')),
+                                        );
+                                      }
                                     }
                                   },
                                   icon: const Icon(Icons.edit),
@@ -245,11 +238,19 @@ class _EditdriverState extends State<Editdriver> {
                             Expanded(
                               flex: 1,
                               child: ElevatedButton.icon(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Processing Data')),
-                                    );
+                                    bool success = await AdminData().deleteDriver(id: widget.id);
+                                    if (success) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Driver deleted successfully')),
+                                      );
+                                      Navigator.pop(context);  // Navigate back after deletion
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Failed to delete driver')),
+                                      );
+                                    }
                                   }
                                 },
                                 icon: const Icon(Icons.delete),

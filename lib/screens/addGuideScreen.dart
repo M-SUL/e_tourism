@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../httpHelper/adminData.dart';
 import 'driversListScreen.dart';
 
 class Addguidescreen extends StatelessWidget {
@@ -186,12 +187,29 @@ class Addguidescreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               //todo send data to backend
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Processing Data')),
-                              );
+                              // Collect form data
+                              final newGuideData = {
+                                'first_name': formControllers['firstName']!.text,
+                                'last_name': formControllers['lastName']!.text,
+                                'mobile': formControllers['mobile']!.text,
+                                'address': formControllers['address']!.text,
+                                'description': formControllers['description']!.text,
+                              };
+                              // Call addGuide method from AdminData
+                              bool success = await AdminData().addGuide(data: newGuideData);
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Guide added successfully')),
+                                );
+                                Navigator.pop(context);  // Optionally navigate back after success
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Failed to add guide')),
+                                );
+                              }
                             }
                           },
                           icon: const Icon(Icons.save),

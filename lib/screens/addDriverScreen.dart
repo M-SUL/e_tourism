@@ -1,6 +1,7 @@
 import 'package:e_tourism/screens/guidesListScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../httpHelper/adminData.dart';
 
 class Adddriverscreen extends StatelessWidget {
   Adddriverscreen({super.key});
@@ -8,8 +9,7 @@ class Adddriverscreen extends StatelessWidget {
   final Map<String, TextEditingController> formControllers = {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
-    'mobile': TextEditingController(),
-    'address': TextEditingController(),
+    'plate_number': TextEditingController(),
     'description': TextEditingController(),
   };
   final _formKey = GlobalKey<FormState>();
@@ -137,36 +137,16 @@ class Adddriverscreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
-                          controller: formControllers["mobile"],
+                          controller: formControllers["plate_number"],
                           decoration: InputDecoration(
-                            labelText: 'Mobile',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                          ),
-                          keyboardType: TextInputType.phone,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your mobile number';
-                            }
-                            if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                              return 'Please enter a valid 10-digit mobile number';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: formControllers["address"],
-                          decoration: InputDecoration(
-                            labelText: 'Address',
+                            labelText: 'plate number',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your address';
+                              return 'Please enter your plate_number';
                             }
                             return null;
                           },
@@ -189,13 +169,27 @@ class Adddriverscreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              //todo send data to backend
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Processing Data')),
-                              );
+                              // Collect form data
+                              final newDriverData = {
+                                'first_name': formControllers['firstName']!.text,
+                                'last_name': formControllers['lastName']!.text,
+                                'plate_number': formControllers['plate_number']!.text,
+                                'description': formControllers['description']!.text,
+                              };
+                              // Call addGuide method from AdminData
+                              bool success = await AdminData().addDriver(data: newDriverData);
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Guide added successfully')),
+                                );
+                                Navigator.pop(context);  // Optionally navigate back after success
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Failed to add guide')),
+                                );
+                              }
                             }
                           },
                           icon: const Icon(Icons.save),
