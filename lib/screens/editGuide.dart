@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../httpHelper/adminData.dart';
 import 'driversListScreen.dart';
 
 class Editguide extends StatefulWidget {
-   Editguide({super.key, required this.fullName});
-   final String fullName;
+   Editguide({super.key, required this.id});
+   final int id;
 
   @override
   State<Editguide> createState() => _EditguideState();
@@ -16,7 +15,7 @@ class _EditguideState extends State<Editguide> {
   Map<String, String> data = {};
   bool dataIsset=false;
   Future<void> setData() async {
-    data =await AdminData().getOneGuide(fullname: widget.fullName);
+    data =await AdminData().getOneGuide(id: widget.id);
     formControllers["firstName"]!.text=data["firstName"]!;
     formControllers["lastName"]!.text=data["lastName"]!;
     formControllers["mobile"]!.text=data["mobile"]!;
@@ -229,11 +228,27 @@ class _EditguideState extends State<Editguide> {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton.icon(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Processing Data')),
-                                      );
+                                      final updateData = {
+                                        'first_name': formControllers['firstName']!.text,
+                                        'last_name': formControllers['lastName']!.text,
+                                        'mobile': formControllers['mobile']!.text,
+                                        'address': formControllers['address']!.text,
+                                        'description': formControllers['description']!.text,
+                                      };
+                                      // Call updateGuide method from AdminData
+                                      bool success = await AdminData().updateGuide(id: widget.id, updateData: updateData);
+                                      // Send PUT request to update guide
+                                      if (success) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Guide updated successfully')),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Failed to update guide')),
+                                        );
+                                      }
                                     }
                                   },
                                   icon: const Icon(Icons.edit),
@@ -247,10 +262,16 @@ class _EditguideState extends State<Editguide> {
                             Expanded(
                               flex: 1,
                               child: ElevatedButton.icon(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
+                                onPressed: () async {
+                                  bool success = await AdminData().deleteGuide(id: widget.id);
+                                  if (success) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Processing Data')),
+                                      const SnackBar(content: Text('Guide deleted successfully')),
+                                    );
+                                    Navigator.pop(context);  // Navigate back after deletion
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Failed to delete guide')),
                                     );
                                   }
                                 },

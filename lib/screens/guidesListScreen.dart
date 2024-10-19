@@ -4,6 +4,7 @@ import 'package:e_tourism/screens/editGuide.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+
 import '../httpHelper/adminData.dart';
 
 class Guideslistscreen extends StatefulWidget {
@@ -14,10 +15,10 @@ class Guideslistscreen extends StatefulWidget {
 }
 
 class _GuideslistscreenState extends State<Guideslistscreen> {
-  List<List<String>> data = [];
+  List<List> data = [];
   bool dataISset = false;
   Future<void> setData() async {
-    data = await AdminData().getDrivers();
+    data = await AdminData().getGuides();
     setState(() {
       dataISset = true;
     });
@@ -144,7 +145,7 @@ class _GuideslistscreenState extends State<Guideslistscreen> {
                               child: GestureDetector(
                                 onTap: (){
                                   Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                                    return  Editguide(fullName: "${item[0]} ${item[1]}");
+                                    return  Editguide(id: int.parse("${item[2]}"));
                                   }));
                                 },
                                 child: Card(
