@@ -1,28 +1,32 @@
-import 'package:e_tourism/httpHelper/adminData.dart';
-import 'package:e_tourism/screens/ProgramsListScreen.dart';
-import 'package:e_tourism/screens/addDriverScreen.dart';
-import 'package:e_tourism/screens/editDriver.dart';
+import 'package:e_tourism/screens/addProgramScreen.dart';
+import 'package:e_tourism/screens/driversListScreen.dart';
+import 'package:e_tourism/screens/editProgramScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../httpHelper/adminData.dart';
+import 'addDriverScreen.dart';
+import 'editDriver.dart';
 import 'guidesListScreen.dart';
 
-class Driverslistscreen extends StatefulWidget {
-  const Driverslistscreen({super.key});
+class Programslistscreen extends StatefulWidget {
+  const Programslistscreen({super.key});
 
   @override
-  State<Driverslistscreen> createState() => _DriverslistscreenState();
+  State<Programslistscreen> createState() => _ProgramslistscreenState();
 }
 
-class _DriverslistscreenState extends State<Driverslistscreen> {
+class _ProgramslistscreenState extends State<Programslistscreen> {
   List<List> data = [];
   bool dataISset = false;
+
   Future<void> setData() async {
-    data = await AdminData().getDrivers();
+    data = await AdminData().getPrograms();
     setState(() {
       dataISset = true;
     });
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -59,6 +63,19 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
                     const Text("Guids")
                   ],
                 ),
+                 Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(onTap:(){
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const Driverslistscreen();
+                      }));
+                    },child: Icon(Icons.bookmark_outline)),
+                    Text("Drivers")
+                  ],
+                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,20 +87,7 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
                             borderRadius: BorderRadius.horizontal(
                                 left: Radius.circular(20),
                                 right: Radius.circular(20))),
-                        child: const Icon(Icons.bookmark)),
-                    const Text("Drivers")
-                  ],
-                ),
-                 Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(onTap: (){
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return const Programslistscreen();
-                      }));
-                    },child: const Icon(Icons.notifications_outlined)),
+                        child: const Icon(Icons.notifications)),
                     const Text("Programs")
                   ],
                 ),
@@ -100,7 +104,7 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
       body: !dataISset
           ? Center(
               child: Container(
-                width: 100,
+              width: 100,
               height: 100,
               child: const CircularProgressIndicator(),
             ))
@@ -115,14 +119,13 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           const Text(
-                            "Add Driver",
+                            "Open a new programme",
                             style: TextStyle(color: Colors.grey, fontSize: 20),
                           ),
                           IconButton(
                             onPressed: () {
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) {
-                                return Adddriverscreen();
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                return Addprogramscreen();
                               }));
                             },
                             icon: const Icon(Icons.add),
@@ -151,10 +154,8 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
                                         vertical: 5, horizontal: 10),
                                     child: GestureDetector(
                                       onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return  Editdriver(id: int.parse("${item[2]}"));
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                          return Editprogramscreen(id: item[0]);
                                         }));
                                       },
                                       child: Card(
@@ -162,40 +163,56 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              CircleAvatar(
-                                                maxRadius: 20,
-                                                minRadius: 10,
-                                                child: Image.asset(
-                                                    "assets/images/imageHolder.png"),
-                                              ),
-                                              const SizedBox(
-                                                width: 10,
+                                              Column(
+                                                children: [
+                                                  const Text(
+                                                    "name",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w300),
+                                                  ),
+                                                  Text(
+                                                    item[1],
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
                                               ),
                                               Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    item.elementAt(0),
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
+                                                  const Text(
+                                                    "start date",
+                                                    style: TextStyle(
                                                         fontWeight:
-                                                            FontWeight.bold),
+                                                            FontWeight.w300),
                                                   ),
-                                                  SizedBox(
-                                                      width: size.width / 2,
-                                                      child: Text(
-                                                        item.elementAt(1),
-                                                        style: const TextStyle(
-                                                            color: Colors.grey,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w300),
-                                                        softWrap: true,
-                                                      ))
+                                                  Text(
+                                                    item[4],
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                children: [
+                                                  const Text(
+                                                    "end date",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w300),
+                                                  ),
+                                                  Text(
+                                                    item[5],
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
                                                 ],
                                               )
                                             ],

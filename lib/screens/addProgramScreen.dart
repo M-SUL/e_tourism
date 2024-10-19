@@ -1,18 +1,26 @@
-import 'package:e_tourism/screens/guidesListScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../httpHelper/adminData.dart';
 import 'ProgramsListScreen.dart';
+import 'driversListScreen.dart';
+import 'guidesListScreen.dart';
 
-class Adddriverscreen extends StatelessWidget {
-  Adddriverscreen({super.key});
+class Addprogramscreen extends StatefulWidget {
+  Addprogramscreen({super.key});
 
+  @override
+  State<Addprogramscreen> createState() => _AddprogramscreenState();
+}
+
+class _AddprogramscreenState extends State<Addprogramscreen> {
+  DateTime? _startDate;
+  DateTime? _endDate;
   final Map<String, TextEditingController> formControllers = {
-    'firstName': TextEditingController(),
-    'lastName': TextEditingController(),
-    'plate_number': TextEditingController(),
+    'name': TextEditingController(),
     'description': TextEditingController(),
   };
+
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -36,17 +44,34 @@ class Adddriverscreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GestureDetector(onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                        return const Guideslistscreen();
-                      }));
-                    },
-                    child: const Icon(Icons.location_on_outlined)),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return const Guideslistscreen();
+                          }));
+                        },
+                        child: const Icon(Icons.location_on_outlined)),
                     const Text("Guids")
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return const Driverslistscreen();
+                          }));
+                        },
+                        child: Icon(Icons.bookmark_outline)),
+                    Text("Drivers")
                   ],
                 ),
                 Column(
@@ -60,20 +85,7 @@ class Adddriverscreen extends StatelessWidget {
                             borderRadius: BorderRadius.horizontal(
                                 left: Radius.circular(20),
                                 right: Radius.circular(20))),
-                        child: const Icon(Icons.bookmark)),
-                    const Text("Drivers")
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(onTap: (){
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return const Programslistscreen();
-                      }));
-                    },child: const Icon(Icons.notifications_outlined)),
+                        child: const Icon(Icons.notifications)),
                     const Text("Programs")
                   ],
                 ),
@@ -93,7 +105,7 @@ class Adddriverscreen extends StatelessWidget {
             child: Column(
               children: [
                 const Text(
-                  "new Driver",
+                  "new Program",
                   style: TextStyle(fontSize: 25),
                 ),
                 const SizedBox(
@@ -111,48 +123,16 @@ class Adddriverscreen extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         TextFormField(
-                          controller: formControllers["firstName"],
+                          controller: formControllers["name"],
                           decoration: InputDecoration(
-                            labelText: 'First Name',
+                            labelText: 'name',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your first name';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: formControllers["lastName"],
-                          decoration: InputDecoration(
-                            labelText: 'Second Name',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your second name';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: formControllers["plate_number"],
-                          decoration: InputDecoration(
-                            labelText: 'plate number',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your plate_number';
+                              return 'Please enter program name';
                             }
                             return null;
                           },
@@ -173,27 +153,58 @@ class Adddriverscreen extends StatelessWidget {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () => _selectDate(context, true),
+                          child: Text(_startDate == null
+                              ? 'Select Start Date'
+                              : 'Start Date: ${_startDate!.year}-${_startDate!.month}-${_startDate!.day}'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _selectDate(context, false),
+                          child: Text(_endDate == null
+                              ? 'Select End Date'
+                              : 'End Date:${_endDate!.year}-${_endDate!.month}-${_endDate!.day}'),
+                        ),
+                        const SizedBox(height: 10),
                         ElevatedButton.icon(
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
+                              if (_validateDates() != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          _validateDates() ?? "sdasdasdd")),
+                                );
+                                return;
+                              }
+                              //todo send data to backend
                               // Collect form data
-                              final newDriverData = {
-                                'first_name': formControllers['firstName']!.text,
-                                'last_name': formControllers['lastName']!.text,
-                                'plate_number': formControllers['plate_number']!.text,
-                                'description': formControllers['description']!.text,
+                              final newProgram = {
+                                'name': formControllers['name']!.text,
+                                'description':
+                                    formControllers['description']!.text,
+                                'start_date':
+                                    "${_startDate!.year}-${_startDate!.month}-${_startDate!.day}",
+                                'end_date':
+                                    "${_endDate!.year}-${_endDate!.month}-${_endDate!.day}",
+                                'type': "eco",
                               };
+                              print(newProgram["start_date"]);
                               // Call addGuide method from AdminData
-                              bool success = await AdminData().addDriver(data: newDriverData);
+                              bool success = await AdminData()
+                                  .addProgram(data: newProgram);
                               if (success) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Guide added successfully')),
+                                  const SnackBar(
+                                      content:
+                                          Text('program added successfully')),
                                 );
-                                Navigator.pop(context);  // Optionally navigate back after success
+                                
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Failed to add guide')),
+                                  const SnackBar(
+                                      content: Text('Failed to add program')),
                                 );
                               }
                             }
@@ -215,5 +226,32 @@ class Adddriverscreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != (isStartDate ? _startDate : _endDate)) {
+      setState(() {
+        if (isStartDate) {
+          _startDate = picked;
+        } else {
+          _endDate = picked;
+        }
+      });
+    }
+  }
+
+  String? _validateDates() {
+    if (_startDate != null && _endDate != null) {
+      if (_endDate!.isBefore(_startDate!)) {
+        return 'End date must be after start date';
+      }
+    }
+    return null;
   }
 }

@@ -8,8 +8,8 @@ class AdminData {
   Future<List<List>> getDrivers() async {
     /// no data for input and return the list of drivers like in the example
     final url = Uri.parse('http://mhdaliharmalani.pythonanywhere.com/api/tourism/drivers/');
-    final response = await http.get(url);
 
+    final response = await http.get(url);
     if (response.statusCode == 200) {
       // Parse the JSON response as a List of Map<String, dynamic>
       final List<dynamic> data = json.decode(response.body);
@@ -168,6 +168,113 @@ class AdminData {
       // Handle any errors or unsuccessful response
       print('Failed to add guide: ${response.body}');
       return false;  // Guide creation failed
+    }
+  }
+
+
+  Future<List<List>> getPrograms() async {
+    /// no data for input and return the list of drivers like in the example
+    final url = Uri.parse('http://mhdaliharmalani.pythonanywhere.com/api/tourism/programs/');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response as a List of Map<String, dynamic>
+      final List<dynamic> data = json.decode(response.body);
+
+      List<List> programs = data.map((program) {
+
+        return [
+          program['id'],
+          program['name'] as String,
+          program['type'] as String,
+          program['description'] as String,
+          program['start_date'] as String,
+          program['end_date'] as String,
+        ];
+      }).toList();
+
+
+      return programs;
+    } else {
+      // Handle error if the response code is not 200
+      throw Exception('Failed to load drivers');
+    }
+  }
+  Future<bool> addProgram({required Map<String, String> data}) async {
+    /// send data to back and and return true if added and false if not
+    final uri = Uri.parse('$url/api/tourism/programs/');
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(data),
+    );
+
+    // Check if the response is successful (status code 201 for creation success)
+    if (response.statusCode == 201) {
+      return true;  // Guide added successfully
+    } else {
+      // Handle any errors or unsuccessful response
+      print('Failed to add Program: ${response.body}');
+      return false;  // Guide creation failed
+    }
+  }
+  Future<bool> deleteProgram({required int id}) async {
+    final uri = Uri.parse('$url/api/tourism/programs/$id/');
+    final response = await http.delete(uri);
+
+    return response.statusCode == 204;
+  }
+  Future<Map<String, String>> getOneProgram({required int id}) async {
+    final uri = Uri.parse('$url/api/tourism/programs/$id/');
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return {
+        'name': data['name'],
+        'description': data['description']
+      };
+    } else {
+      throw Exception('Failed to fetch program with id $id');
+    }
+  }
+  Future<bool> updateProgram({required int id, required Map<String, String> updateData}) async {
+    final uri = Uri.parse('$url/api/tourism/programs/$id/');
+    final response = await http.put(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(updateData),
+    );
+    return response.statusCode == 200;
+  }
+  Future<List<List>> getToursForProgram(int id) async {
+    /// no data for input and return the list of drivers like in the example
+    final url = Uri.parse('http://mhdaliharmalani.pythonanywhere.com/api/tourism/tours/');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response as a List of Map<String, dynamic>
+      final List<dynamic> data = json.decode(response.body);
+
+      List<List> tours=[];
+      data.map((tour) {
+        if(tour['program']['id']==id)
+          {
+           tours.add([
+             tour['id'],
+             tour['guide']['id'],
+             tour['driver']['id'],
+             tour['price'],
+             tour['max_people'],
+           ]);
+          }
+      });
+
+
+      return tours;
+    } else {
+      // Handle error if the response code is not 200
+      throw Exception('Failed to load drivers');
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:e_tourism/screens/driversListScreen.dart';
 import 'package:e_tourism/screens/registerScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:e_tourism/util/globals.dart' as globals;
 
 import '../main.dart';
 
@@ -92,12 +93,16 @@ class LoginScreenState extends State<LoginScreen> {
                     onPressed: (){
                       if (_formKey.currentState!.validate()) {
                         //todo send to back and check id is it right
+                        if(_emailController.text=="admin@gmail.com"&&_passwordController.text=="admin123")
+                          {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                              return Driverslistscreen();
+                            }));
+                          }
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Processing Data')),
                         );
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                          return Driverslistscreen();
-                        }));
+
                       }
                     },
                     style: ElevatedButton.styleFrom(

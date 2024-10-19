@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../httpHelper/adminData.dart';
+import 'ProgramsListScreen.dart';
 import 'driversListScreen.dart';
 
 class Editguide extends StatefulWidget {
@@ -91,12 +92,17 @@ class _EditguideState extends State<Editguide> {
                     const Text("Drivers")
                   ],
                 ),
-                const Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.notifications_outlined),
-                    Text("Programs")
+                    GestureDetector(onTap: (){
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const Programslistscreen();
+                      }));
+                    },child: const Icon(Icons.notifications_outlined)),
+                    const Text("Programs")
                   ],
                 ),
                 const Column(

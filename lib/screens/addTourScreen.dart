@@ -1,12 +1,11 @@
-import 'package:e_tourism/screens/guidesListScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../httpHelper/adminData.dart';
-import 'ProgramsListScreen.dart';
+import 'driversListScreen.dart';
+import 'guidesListScreen.dart';
 
-class Adddriverscreen extends StatelessWidget {
-  Adddriverscreen({super.key});
-
+class Addtourscreen extends StatelessWidget {
   final Map<String, TextEditingController> formControllers = {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
@@ -36,17 +35,32 @@ class Adddriverscreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GestureDetector(onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                        return const Guideslistscreen();
-                      }));
-                    },
-                    child: const Icon(Icons.location_on_outlined)),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return const Guideslistscreen();
+                          }));
+                        },
+                        child: const Icon(Icons.location_on_outlined)),
                     const Text("Guids")
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(onTap:(){
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const Driverslistscreen();
+                      }));
+                    },child: Icon(Icons.bookmark_outline)),
+                    Text("Drivers")
                   ],
                 ),
                 Column(
@@ -60,20 +74,7 @@ class Adddriverscreen extends StatelessWidget {
                             borderRadius: BorderRadius.horizontal(
                                 left: Radius.circular(20),
                                 right: Radius.circular(20))),
-                        child: const Icon(Icons.bookmark)),
-                    const Text("Drivers")
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(onTap: (){
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return const Programslistscreen();
-                      }));
-                    },child: const Icon(Icons.notifications_outlined)),
+                        child: const Icon(Icons.notifications)),
                     const Text("Programs")
                   ],
                 ),
@@ -202,7 +203,7 @@ class Adddriverscreen extends StatelessWidget {
                           label: const Text('Save'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                const Color.fromRGBO(243, 237, 247, 1),
+                            const Color.fromRGBO(243, 237, 247, 1),
                           ),
                         ),
                       ],

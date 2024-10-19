@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../httpHelper/adminData.dart';
+import 'ProgramsListScreen.dart';
 
 class Guideslistscreen extends StatefulWidget {
   const Guideslistscreen({super.key});
@@ -69,12 +70,17 @@ class _GuideslistscreenState extends State<Guideslistscreen> {
                     const Text("Drivers")
                   ],
                 ),
-                const Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.notifications_outlined),
-                    Text("Programs")
+                    GestureDetector(onTap: (){
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const Programslistscreen();
+                      }));
+                    },child: const Icon(Icons.notifications_outlined)),
+                    const Text("Programs")
                   ],
                 ),
                 const Column(
