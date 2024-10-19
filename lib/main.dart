@@ -68,30 +68,8 @@ class LoginScreenState extends State<LoginScreen> {
 
 
 
-  // Handle login
-  // void _handleLogin() {
-  //   if (_formKey.currentState!.validate()) {
-  //     String email = _emailController.text;
-  //     String password = _passwordController.text;
-  //
-  //     if (email == "test@example.com" && password == "password123") {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Valid login credentials')),
-  //       );
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const RegistrationScreen()),
-  //       );
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Invalid login credentials')),
-  //       );
-  //     }
-  //   }
-  // }
-
   Future<void> _loginUser(String email, String password) async {
-    final url = Uri.parse('http://10.0.2.2:8000/api/login');
+    final url = Uri.parse('http://mhdaliharmalani.pythonanywhere.com/api/auth/login');
     final response = await http.post(
       url,
       headers: {
@@ -132,7 +110,6 @@ class LoginScreenState extends State<LoginScreen> {
       );
     }
   }
-
 
 
   void _handleLogin() async {
@@ -303,12 +280,14 @@ class RegistrationScreenState extends State<RegistrationScreen> {
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _password2Controller = TextEditingController();
 
   @override
   void dispose() {
     _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _password2Controller.dispose();
     super.dispose();
   }
 
@@ -356,21 +335,22 @@ class RegistrationScreenState extends State<RegistrationScreen> {
   //   }
   // }
 
-  Future<void> _registerUser(String fullName, String email, String password) async {
-    final url = Uri.parse('http://10.0.2.2:8000/api/register');
+  Future<void> _registerUser(String fullName, String email, String password, String password2) async {
+    final url = Uri.parse('http://mhdaliharmalani.pythonanywhere.com/api/auth/register/');
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',  // Set content type to JSON
       },
       body: jsonEncode({
-        'full_name': fullName,
+        'username': fullName,
         'email': email,
         'password': password,
+        'password2': password2,
       }),  // Encode body as JSON
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       final responseBody = jsonDecode(response.body);
       print('User registered successfully: $responseBody');
 
@@ -399,8 +379,9 @@ class RegistrationScreenState extends State<RegistrationScreen> {
       String fullName = _fullNameController.text;
       String email = _emailController.text;
       String password = _passwordController.text;
+      String password2 = _password2Controller.text;
 
-      await _registerUser(fullName, email, password);
+      await _registerUser(fullName, email, password, password2);
     }
   }
 
@@ -451,6 +432,16 @@ class RegistrationScreenState extends State<RegistrationScreen> {
                 validator: _validatePassword,
               ),
               const SizedBox(height: 24),
+              TextFormField(
+                controller: _password2Controller,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password2',
+                  border: OutlineInputBorder(),
+                ),
+                validator: _validatePassword,
+              ),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _handleRegistration,
                 style: ElevatedButton.styleFrom(
@@ -473,61 +464,3 @@ class RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 }
-
-
-// RegistrationScreen widget
-// class RegistrationScreen extends StatelessWidget {
-//   const RegistrationScreen({super.key});
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('E_Tourism Registration'),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             const Text(
-//               'Register',
-//               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-//             ),
-//             const SizedBox(height: 24),
-//             const TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Full Name',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             const TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Email',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             const TextField(
-//               obscureText: true,
-//               decoration: InputDecoration(
-//                 labelText: 'Password',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             const SizedBox(height: 24),
-//             ElevatedButton(
-//               onPressed: () {
-//                 print("Register button pressed");
-//               },
-//               child: const Text('Register'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
