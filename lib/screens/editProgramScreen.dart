@@ -1,10 +1,11 @@
+import 'package:e_tourism/screens/addTourScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../httpHelper/adminData.dart';
-import 'DriverToursScreen.dart';
 import 'ProgramsListScreen.dart';
 import 'driversListScreen.dart';
+import 'guidesListScreen.dart';
 
 class Editprogramscreen extends StatefulWidget {
   Editprogramscreen({super.key, required this.id});
@@ -15,9 +16,12 @@ class Editprogramscreen extends StatefulWidget {
 
 class _EditprogramscreenState extends State<Editprogramscreen> {
   Map<String, String> data = {};
+  List<List<dynamic>> tours = [];
   bool dataIsset=false;
   Future<void> setData() async {
     data =await AdminData().getOneProgram(id: widget.id);
+    tours =await AdminData().getToursForProgram(widget.id);
+    print(tours);
     formControllers["name"]!.text=data["name"]!;
     formControllers["description"]!.text=data["description"]!;
     setState(() {
@@ -53,7 +57,7 @@ class _EditprogramscreenState extends State<Editprogramscreen> {
       bottomNavigationBar: Container(
         height: 80,
         color: const Color.fromRGBO(243, 237, 247, 1),
-        child:  Center(
+        child: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -64,14 +68,14 @@ class _EditprogramscreenState extends State<Editprogramscreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: size.width/6,
-                      decoration: const BoxDecoration(
-                          color: Color.fromRGBO(234, 221, 255, 1),
-                          borderRadius: BorderRadius.horizontal(left: Radius.circular(20),right: Radius.circular(20))
-                      ),
-                      child: const Icon(Icons.location_on),
-                    ),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return const Guideslistscreen();
+                          }));
+                        },
+                        child: const Icon(Icons.location_on_outlined)),
                     const Text("Guids")
                   ],
                 ),
@@ -79,39 +83,36 @@ class _EditprogramscreenState extends State<Editprogramscreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GestureDetector(child: const Icon(Icons.bookmark_border), onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                        return Driverslistscreen();
-                      }));
-                    },),
-                    const Text("Drivers")
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return const Driverslistscreen();
+                          }));
+                        },
+                        child: Icon(Icons.bookmark_outline)),
+                    Text("Drivers")
                   ],
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GestureDetector(onTap: (){
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return const Programslistscreen();
-                      }));
-                    },child: const Icon(Icons.notifications_outlined)),
+                    Container(
+                        width: size.width / 6,
+                        decoration: const BoxDecoration(
+                            color: Color.fromRGBO(234, 221, 255, 1),
+                            borderRadius: BorderRadius.horizontal(
+                                left: Radius.circular(20),
+                                right: Radius.circular(20))),
+                        child: const Icon(Icons.notifications)),
                     const Text("Programs")
                   ],
                 ),
-                Column(
+                const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(onTap: (){
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return DriverToursScreen();
-                      }));
-                    },child: const Icon(Icons.settings)),
-                    const Text("settings")
-                  ],
+                  children: [Icon(Icons.settings), Text("settings")],
                 )
               ],
             ),
@@ -153,7 +154,7 @@ class _EditprogramscreenState extends State<Editprogramscreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your first name';
+                              return 'Please enter the name';
                             }
                             return null;
                           },
@@ -173,6 +174,26 @@ class _EditprogramscreenState extends State<Editprogramscreen> {
                             }
                             return null;
                           },
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DropdownButton<String>(
+                              hint: Text('tours'),
+                              items: tours.map<DropdownMenuItem<String>>((List<dynamic> tour) {
+                                print(tour);
+                                return DropdownMenuItem<String>(
+                                  value: tour[1],
+                                  child: Text(tour[1]),
+                                );
+                              }).toList(), onChanged: (String? value) {  },
+                            ),
+                            IconButton(onPressed: (){
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                return Addtourscreen(programId: widget.id,);
+                              }));
+                            }, icon: Icon(Icons.add))
+                          ],
                         ),
                         const SizedBox(height: 20),
                         Row(

@@ -1,9 +1,11 @@
 import 'package:e_tourism/screens/driversListScreen.dart';
+import 'package:e_tourism/screens/programsScreen.dart';
 import 'package:e_tourism/screens/registerScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:e_tourism/util/globals.dart' as globals;
 
+import '../httpHelper/clintsData.dart';
 import '../main.dart';
 
 class LoginScreen extends StatefulWidget  {
@@ -50,18 +52,18 @@ class LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      labelText: 'User Name',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return 'Please enter your name';
                       }
-                      if (!RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$').hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
+                      // if (!RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$').hasMatch(value)) {
+                      //   return 'Please enter a valid email';
+                      // }
                       return null;
                     },
                   ),
@@ -90,7 +92,7 @@ class LoginScreenState extends State<LoginScreen> {
 
                   // Login Button
                   ElevatedButton(
-                    onPressed: (){
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         //todo send to back and check id is it right
                           if(_emailController.text=="admin@gmail.com"&&_passwordController.text=="admin123")
@@ -99,10 +101,22 @@ class LoginScreenState extends State<LoginScreen> {
                               return Driverslistscreen();
                             }));
                           }
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
-                        );
-
+                        if (_formKey.currentState!.validate()) {
+                          var user={
+                            "username":_emailController.text,
+                            "password":_passwordController.text,
+                          };
+                          bool success = await ClintsData().login(user: user);
+                          if (success) {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                              return Programsscreen(searchString: "");
+                            }));  // Navigate back after deletion
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('name or password may be wrong')),
+                            );
+                          }
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(

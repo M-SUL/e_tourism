@@ -27,6 +27,7 @@ class _AddprogramscreenState extends State<Addprogramscreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    List<String> tours=["1","2"];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -169,6 +170,7 @@ class _AddprogramscreenState extends State<Addprogramscreen> {
                               ? 'Select Start Date'
                               : 'Start Date: ${_startDate!.year}-${_startDate!.month}-${_startDate!.day}'),
                         ),
+                        SizedBox(height: 10,),
                         ElevatedButton(
                           onPressed: () => _selectDate(context, false),
                           child: Text(_endDate == null
@@ -199,7 +201,6 @@ class _AddprogramscreenState extends State<Addprogramscreen> {
                                     "${_endDate!.year}-${_endDate!.month}-${_endDate!.day}",
                                 'type': "eco",
                               };
-                              print(newProgram["start_date"]);
                               // Call addGuide method from AdminData
                               bool success = await AdminData()
                                   .addProgram(data: newProgram);
