@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'ProgramsListScreen.dart';
+import '../httpHelper/adminData.dart';
+import 'driversListScreen.dart';
+import 'guidesListScreen.dart';
 
 class DriverToursScreen extends StatefulWidget {
   @override
@@ -10,38 +13,30 @@ class DriverToursScreen extends StatefulWidget {
 }
 
 class _DriverToursScreenState extends State<DriverToursScreen> {
-  List<Map<String, dynamic>> drivers = [];
+  List<List<dynamic>> drivers = [];
+  Future<void> setData() async {
+    drivers = await AdminData().getDrivers();
+    if(drivers.length==0)
+    {
+      Navigator.pop(context);
+    }
+    selectedDriver=drivers.elementAt(0)[2];
+    setState(() {
+      dataIsset = true;
+    });
+  }
+  int selectedDriver=0;
   int? selectedDriverId;
   DateTime? startDate;
   DateTime? endDate;
-  int? toursNumber;
+  int toursNumber = 3;
+  bool dataIsset = false;
 
   @override
   void initState() {
     super.initState();
-    fetchDrivers();
   }
 
-  // Fetch drivers from the API and populate the dropdown
-  Future<void> fetchDrivers() async {
-    final url = Uri.parse('mhdaliharmalani.pythonanywhere.com/api/tourism/drivers');
-    final response = await http.get(url);
-
-
-    if (response.statusCode == 200) {
-      setState(() {
-        // print('ok'*5);
-        print('Response body: ${response.body}');
-
-        final List<dynamic> data = json.decode(response.body);
-        final List<Map<String, dynamic>> drivers = List<Map<String, dynamic>>.from(data);
-      });
-    } else {
-      print('no'*5);
-      // Handle the error
-      print('Failed to load drivers');
-    }
-  }
 
   // Function to select a date using showDatePicker
   Future<void> selectDate(BuildContext context, bool isStartDate) async {
@@ -76,7 +71,7 @@ class _DriverToursScreenState extends State<DriverToursScreen> {
         }),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
           toursNumber = data['number_of_driver_tours'];
@@ -106,14 +101,12 @@ class _DriverToursScreenState extends State<DriverToursScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: size.width/6,
-                      decoration: const BoxDecoration(
-                          color: Color.fromRGBO(234, 221, 255, 1),
-                          borderRadius: BorderRadius.horizontal(left: Radius.circular(20),right: Radius.circular(20))
-                      ),
-                      child: const Icon(Icons.location_on),
-                    ),
+                    GestureDetector(onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                        return const Guideslistscreen();
+                      }));
+                    },
+                        child: const Icon(Icons.location_on_outlined)),
                     const Text("Guids")
                   ],
                 ),
@@ -121,14 +114,11 @@ class _DriverToursScreenState extends State<DriverToursScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                        width: size.width / 6,
-                        decoration: const BoxDecoration(
-                            color: Color.fromRGBO(234, 221, 255, 1),
-                            borderRadius: BorderRadius.horizontal(
-                                left: Radius.circular(20),
-                                right: Radius.circular(20))),
-                        child: const Icon(Icons.bookmark)),
+                    GestureDetector(child: const Icon(Icons.bookmark_border), onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                        return Driverslistscreen();
+                      }));
+                    },),
                     const Text("Drivers")
                   ],
                 ),
@@ -177,8 +167,29 @@ class _DriverToursScreenState extends State<DriverToursScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
+            Center(
+              child: DropdownButton<int>(
+                hint: const Text('majd2'),
+                value:selectedDriver ,
+                onChanged: (int? newValue) {
+                  setState(() {
+                    if(newValue!=null)
+                    {
+                      selectedDriver = newValue;
+                    }
+                  });
+                },
+                items: drivers.map<DropdownMenuItem<int>>((List<dynamic> driver) {
+                  return DropdownMenuItem<int>(
+                    value: driver[2],
+                    child: Text(driver[0]),
+                  );
+                }).toList(),
+              ),
+            ),
             // Dropdown for driver names
-            DropdownButton<int>(
+            /*DropdownButton<int>(
               isExpanded: true,
               hint: Text('Driver name'),
               value: selectedDriverId,
@@ -193,7 +204,7 @@ class _DriverToursScreenState extends State<DriverToursScreen> {
                   child: Text(driver['name']),
                 );
               }).toList(),
-            ),
+            ),*/
             const SizedBox(height: 16),
 
             // Date picker for start date
@@ -230,7 +241,11 @@ class _DriverToursScreenState extends State<DriverToursScreen> {
 
             // Button to fetch tours number
             ElevatedButton(
-              onPressed: fetchToursNumber,
+              onPressed: () {
+                setState(() {
+                  toursNumber = 2; // Update the toursNumber inside setState to trigger a UI update
+                });
+              },
               child: Text('Get Tours Number'),
             ),
             const SizedBox(height: 32),
