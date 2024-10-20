@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../httpHelper/adminData.dart';
+import 'DriverToursScreen.dart';
 import 'ProgramsListScreen.dart';
 import 'driversListScreen.dart';
 
@@ -77,12 +78,17 @@ class Addguidescreen extends StatelessWidget {
                     const Text("Programs")
                   ],
                 ),
-                const Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.settings),
-                    Text("settings")
+                    GestureDetector(onTap: (){
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return DriverToursScreen();
+                      }));
+                    },child: const Icon(Icons.settings)),
+                    const Text("settings")
                   ],
                 )
               ],

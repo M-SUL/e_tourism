@@ -5,6 +5,7 @@ import 'package:e_tourism/screens/editDriver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'DriverToursScreen.dart';
 import 'guidesListScreen.dart';
 
 class Driverslistscreen extends StatefulWidget {
@@ -87,10 +88,17 @@ class _DriverslistscreenState extends State<Driverslistscreen> {
                     const Text("Programs")
                   ],
                 ),
-                const Column(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [Icon(Icons.settings), Text("settings")],
+                  children: [
+                    GestureDetector(onTap: (){
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return DriverToursScreen();
+                      }));
+                    },child: const Icon(Icons.settings)),
+                    const Text("settings")],
                 )
               ],
             ),
