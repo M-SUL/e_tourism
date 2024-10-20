@@ -35,7 +35,6 @@ class AdminData {
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      print(data);
       return {
         'firstName': data['first_name'],
         'lastName': data['last_name'],
@@ -205,6 +204,102 @@ class AdminData {
       throw Exception('Failed to load drivers');
     }
   }
+  Future<List<List>> getProgramsWithSearch(String search) async {
+    /// no data for input and return the list of drivers like in the example
+    final url = Uri.parse(
+        'http://mhdaliharmalani.pythonanywhere.com/api/tourism/programs/');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response as a List of Map<String, dynamic>
+      final List<dynamic> data = json.decode(response.body);
+      int i = 0;
+      List<List> programss=[];
+      List<List> programs = data.map((program) {
+        i++;
+        String dateS1 = program['start_date'] as String;
+        DateTime dateS2 = DateTime.parse(dateS1);
+        String dateE1 = program['end_date'] as String;
+        DateTime dateE2 = DateTime.parse(dateE1);
+        if(search==program['name'] as String)
+          {
+            programss.add([
+              program['id'],
+              program['name'] as String,
+              program['type'] as String,
+              program['description'] as String,
+              "${dateS2.year}-${dateS2.month}-${dateS2.day}",
+              "${dateE2.year}-${dateE2.month}-${dateE2.day}",
+              i % 2 == 0 ? "assets/images/pro1.png" : "assets/images/pro2.png"
+            ]);
+          }
+        return [
+          program['id'],
+          program['name'] as String,
+          program['type'] as String,
+          program['description'] as String,
+          "${dateS2.year}-${dateS2.month}-${dateS2.day}",
+          "${dateE2.year}-${dateE2.month}-${dateE2.day}",
+          i % 2 == 0 ? "assets/images/pro1.png" : "assets/images/pro2.png"
+        ];
+      }).toList();
+
+      return programss;
+    } else {
+      // Handle error if the response code is not 200
+      throw Exception('Failed to load drivers');
+    }
+  }
+  Future<List<List>> getProgramsWithSearchdate(DateTime start,DateTime end) async {
+    /// no data for input and return the list of drivers like in the example
+    final url = Uri.parse(
+        'http://mhdaliharmalani.pythonanywhere.com/api/tourism/programs/');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response as a List of Map<String, dynamic>
+      final List<dynamic> data = json.decode(response.body);
+      int i = 0;
+      List<List> programss=[];
+      List<List> programs = data.map((program) {
+        i++;
+        String dateS1 = program['start_date'] as String;
+        DateTime dateS2 = DateTime.parse(dateS1);
+        String dateE1 = program['end_date'] as String;
+        DateTime dateE2 = DateTime.parse(dateE1);
+        print(dateE2.isBefore(end));
+        print(dateS2.isBefore(end));
+        print(dateE2.isAfter(start));
+        print(dateE2.isAfter(start));
+        if(dateE2.isBefore(end)&&dateS2.isBefore(end)&&dateE2.isAfter(start)&&dateS2.isAfter(start))
+          {
+            programss.add([
+              program['id'],
+              program['name'] as String,
+              program['type'] as String,
+              program['description'] as String,
+              "${dateS2.year}-${dateS2.month}-${dateS2.day}",
+              "${dateE2.year}-${dateE2.month}-${dateE2.day}",
+              i % 2 == 0 ? "assets/images/pro1.png" : "assets/images/pro2.png"
+            ]);
+          }
+        return [
+          program['id'],
+          program['name'] as String,
+          program['type'] as String,
+          program['description'] as String,
+          "${dateS2.year}-${dateS2.month}-${dateS2.day}",
+          "${dateE2.year}-${dateE2.month}-${dateE2.day}",
+          i % 2 == 0 ? "assets/images/pro1.png" : "assets/images/pro2.png"
+        ];
+      }).toList();
+
+      return programss;
+    } else {
+      // Handle error if the response code is not 200
+      throw Exception('Failed to load drivers');
+    }
+  }
 
   Future<bool> addProgram({required Map<String, dynamic> data}) async {
     /// send data to back and and return true if added and false if not
@@ -226,8 +321,6 @@ class AdminData {
   }
 
   Future<bool> addTour({required Map<String, dynamic> data}) async {
-    print(data);
-
     /// send data to back and and return true if added and false if not
     final uri = Uri.parse('$url/api/tourism/tours/');
     final response = await http.post(
@@ -295,9 +388,7 @@ class AdminData {
     if (response.statusCode == 200) {
       // Parse the JSON response as a List of Map<String, dynamic>
       final List<dynamic> data = json.decode(response.body);
-      //print(id);
-      //print(data);
-      print(data[0]['program']['id'] == id);
+
       List<List> tours = [];
       data.forEach((tour) {
         if (tour['program']['id'] == id) {
