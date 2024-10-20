@@ -296,10 +296,10 @@ class _AddtourscreenState extends State<Addtourscreen> {
                                 'driver_id': selectedDriver,
                                 'program_id': widget.programId,
                                 'guide_id': selectedGuid,
-                                'start_date': "${_startDate!.year}-${_startDate!.month}-${_startDate!.day}",
+                                'start_date': _startDate.toString(),
                                 'tour_date': '2025-12-15T01:00:01Z',
                                 'end_date':
-                                "${_endDate!.year}-${_endDate!.month}-${_endDate!.day}",
+                                _endDate.toString(),
                                 'type': "eco",
                               };
                               // Call addGuide method from AdminData

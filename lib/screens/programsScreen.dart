@@ -169,10 +169,10 @@ Future<void> withdate() async {
                         child: ListView(
                           scrollDirection: Axis.horizontal,
                           children: programs.map((element) {
-                            DateTime dateTime = DateTime.parse(element[4]);
-                            DateTime dateTime2 = DateTime.parse(element[5]);
-                            final difference =
-                                dateTime2.difference(dateTime).inDays;
+                            int d=int.parse(element[4].toString().split('-')[2]);
+                            int d1=int.parse(element[5].toString().split('-')[2]);
+                            final difference = d1-d;
+
                             return GestureDetector(
                               onTap: () {
                                 Navigator.of(context)
