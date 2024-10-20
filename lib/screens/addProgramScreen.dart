@@ -196,9 +196,9 @@ class _AddprogramscreenState extends State<Addprogramscreen> {
                                 'description':
                                     formControllers['description']!.text,
                                 'start_date':
-                                    "${_startDate!.year}-${_startDate!.month}-${_startDate!.day}",
+                                    _startDate.toString(),
                                 'end_date':
-                                    "${_endDate!.year}-${_endDate!.month}-${_endDate!.day}",
+                                    _endDate.toString(),
                                 'type': "eco",
                               };
                               // Call addGuide method from AdminData
