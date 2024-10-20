@@ -1,4 +1,6 @@
+import 'package:e_tourism/httpHelper/adminData.dart';
 import 'package:e_tourism/httpHelper/clintsData.dart';
+import 'package:e_tourism/screens/programDetailsScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,14 +13,14 @@ class Programsscreen extends StatefulWidget {
 }
 
 class _ProgramsscreenState extends State<Programsscreen> {
-  List<Map<String, String>> programs = [];
-  List<Map<String, String>> subTours = [];
+  List<List<dynamic>> programs = [];
+  List<List<dynamic>> subTours = [];
   bool dataIsset = false;
   TextEditingController searchString=TextEditingController();
 
   Future<void> setData() async {
-    programs = await ClintsData().getPrograms(name: widget.searchString);
-    subTours = await ClintsData().getSubTours(name: "");
+    programs = await AdminData().getPrograms();
+    subTours = await ClintsData().getSubTours();
     setState(() {
       dataIsset = true;
     });
@@ -99,30 +101,40 @@ class _ProgramsscreenState extends State<Programsscreen> {
                         child: ListView(
                           scrollDirection: Axis.horizontal,
                           children: programs.map((element){
-                            return Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Container(
-                                height: 267,
-                                width: 213.6,
-                                color:  const Color.fromRGBO(234, 221, 255, 1),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Image.asset(element["image"]!,height: 213.6,width:213.6,fit: BoxFit.fill,),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 5),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(element["name"]!,style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w500),),
-                                          const SizedBox(width: 10,),
-                                          const Icon(Icons.circle,color: Color.fromRGBO(79, 55, 138, 1),size:13,),
-                                          const SizedBox(width: 10,),
-                                          Text(element["duration"]!,style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w500),),
-                                        ],
-                                      ),
-                                    )
-                                  ],
+                            DateTime dateTime = DateTime.parse(element[4]);
+                            DateTime dateTime2 = DateTime.parse(element[5]);
+                            final difference = dateTime2.difference(dateTime).inDays;
+                            return GestureDetector(
+                              onTap: (){
+                                Navigator.of(context).push(MaterialPageRoute(builder: (comtext){
+                                  return Programdetailsscreen(id: element[0],image: element[6],);
+                                }));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Container(
+                                  height: 267,
+                                  width: 213.6,
+                                  color:  const Color.fromRGBO(234, 221, 255, 1),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Image.asset(element[6]!,height: 213.6,width:213.6,fit: BoxFit.fill,),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 5),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(element[1]!,style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w500),),
+                                            const SizedBox(width: 10,),
+                                            const Icon(Icons.circle,color: Color.fromRGBO(79, 55, 138, 1),size:13,),
+                                            const SizedBox(width: 10,),
+                                            Text(difference.toString(),style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w500),),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -159,12 +171,12 @@ class _ProgramsscreenState extends State<Programsscreen> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(element['name']!,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 20),),
+                                        Text(element[1]!,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 20),),
                                         Row(
                                          children: [
-                                           Text(element['from']!,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 15),),
+                                           Text(element[3]!,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 15),),
                                            const Icon(Icons.arrow_forward,size: 23,),
-                                           Text(element['to']!,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 15),),
+                                           Text(element[4]!,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: 15),),
                                          ],
                                         )
                                       ],
