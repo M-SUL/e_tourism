@@ -109,7 +109,7 @@ class LoginScreenState extends State<LoginScreen> {
                           bool success = await ClintsData().login(user: user);
                           if (success) {
                             Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                              return Programsscreen(searchString: "");
+                              return Programsscreen(searchString:"");
                             }));  // Navigate back after deletion
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(

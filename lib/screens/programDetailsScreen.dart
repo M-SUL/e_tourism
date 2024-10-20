@@ -465,19 +465,6 @@ class _ProgramdetailsscreenState extends State<Programdetailsscreen> {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 240,
-                  left: size.width / 1.5,
-                  child: const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.filter_list_alt,
-                      color: Color.fromRGBO(79, 55, 138, 1),
-                      size: 40,
-                    ),
-                  ),
-                ),
               ],
             ),
     );
