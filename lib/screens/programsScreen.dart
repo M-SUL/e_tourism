@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Programsscreen extends StatefulWidget {
-  Programsscreen({super.key, required this.searchString});
+  const Programsscreen({super.key, required this.searchString});
   final String searchString;
 
   @override

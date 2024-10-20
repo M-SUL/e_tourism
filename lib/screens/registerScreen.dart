@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:e_tourism/screens/programsScreen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -92,8 +93,11 @@ class RegistrationScreenState extends State<RegistrationScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-
-
+                  if (_formKey.currentState!.validate()) {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                      return const Programsscreen(searchString: '',);
+                    }));
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
